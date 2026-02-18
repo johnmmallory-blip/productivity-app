@@ -3632,6 +3632,64 @@
         // =============================================
         // WEEKLY REVIEW
         // =============================================
+        function computeWeeklyHabitStats(habits) {
+            // Compute scheduled and completed counts for the previous 7 days (ending yesterday)
+            var results = habits.map(function(h) { return Object.assign({}, h); });
+            var dates = [];
+            for (var i = 1; i <= 7; i++) {
+                var d = new Date(currentDate);
+                d.setDate(d.getDate() - i);
+                d.setHours(0,0,0,0);
+                dates.push(d);
+            }
+
+            results.forEach(function(h) {
+                h.scheduledLastWeek = 0;
+                h.completedLastWeek = 0;
+                // Estimate scheduled occurrences based on frequency if present
+                if (h.frequency && h.frequency.type) {
+                    if (h.frequency.type === 'everyday') {
+                        h.scheduledLastWeek = 7;
+                    } else if (h.frequency.type === 'weekdays') {
+                        // count weekdays in the 7-day window
+                        var cnt = 0; dates.forEach(function(dd) { var day = dd.getDay(); if (day !== 0 && day !== 6) cnt++; });
+                        h.scheduledLastWeek = cnt;
+                    } else if (h.frequency.type === 'specific' && Array.isArray(h.frequency.days)) {
+                        var cnt2 = 0; dates.forEach(function(dd) { if (h.frequency.days.indexOf(dd.getDay()) !== -1) cnt2++; });
+                        h.scheduledLastWeek = cnt2;
+                    } else {
+                        h.scheduledLastWeek = 0;
+                    }
+                }
+
+                // Now scan saved daily states for explicit habitTasks entries
+                dates.forEach(function(dd) {
+                    var state = loadDayState(dd);
+                    if (!state) return;
+                    if (state.habitTasks && Array.isArray(state.habitTasks)) {
+                        state.habitTasks.forEach(function(ht) {
+                            if (ht.habitId && ht.habitId === h.id) {
+                                h.scheduledLastWeek = (h.scheduledLastWeek || 0) + 1;
+                                if (ht.completed) h.completedLastWeek = (h.completedLastWeek || 0) + 1;
+                            }
+                        });
+                    }
+                    // Fallback checks: habitCompletions arrays or maps
+                    if (state.habitCompletions && Array.isArray(state.habitCompletions)) {
+                        state.habitCompletions.forEach(function(id) {
+                            if (id === h.id) h.completedLastWeek = (h.completedLastWeek || 0) + 1;
+                        });
+                    }
+                    if (state.habitsCompleted && Array.isArray(state.habitsCompleted)) {
+                        state.habitsCompleted.forEach(function(id) {
+                            if (id === h.id) h.completedLastWeek = (h.completedLastWeek || 0) + 1;
+                        });
+                    }
+                });
+            });
+
+            return results;
+        }
         function getHabitGoalsData() {
             var raw = localStorage.getItem('planner-habit-goals');
             if (raw) return JSON.parse(raw);
@@ -3647,6 +3705,10 @@
         function loadWeeklyReview() {
             // Populate Habit Goals review
             var habitData = getHabitGoalsData();
+            // Compute weekly stats
+            if (habitData.habits && habitData.habits.length > 0) {
+                habitData.habits = computeWeeklyHabitStats(habitData.habits);
+            }
             var habitContainer = document.getElementById('habitGoalsContent');
             habitContainer.innerHTML = '';
 
@@ -3784,18 +3846,90 @@
         }
 
         function openModifyHabitModal(habit) {
-            // simple modal to edit name/frequency/start/end - for now just prompt
-            var name = prompt('Habit name:', habit.name || '');
-            if (name === null) return;
-            habit.name = name;
-            // save back
-            var raw = localStorage.getItem('planner-habit-goals');
-            var data = raw ? JSON.parse(raw) : { habits: [] };
-            for (var i=0;i<data.habits.length;i++) {
-                if (data.habits[i].id === habit.id) { data.habits[i] = habit; break; }
-            }
-            localStorage.setItem('planner-habit-goals', JSON.stringify(data));
-            loadWeeklyReview();
+            // Create a modal to edit habit details
+            var backdrop = document.createElement('div');
+            backdrop.className = 'nav-modal-backdrop';
+            var modal = document.createElement('div');
+            modal.className = 'nav-modal';
+            var heading = document.createElement('h3');
+            heading.textContent = 'Modify Habit';
+            modal.appendChild(heading);
+
+            var nameLabel = document.createElement('div');
+            nameLabel.textContent = 'Name';
+            var nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.value = habit.name || '';
+            nameInput.style.width = '100%';
+            nameInput.style.marginBottom = '8px';
+            modal.appendChild(nameLabel);
+            modal.appendChild(nameInput);
+
+            var freqLabel = document.createElement('div');
+            freqLabel.textContent = 'Frequency';
+            var freqSelect = document.createElement('select');
+            var options = [
+                {v:'everyday', t:'Every Day'},
+                {v:'weekdays', t:'Weekdays'},
+                {v:'specific', t:'Specific Days'},
+                {v:'monthly', t:'Monthly'}
+            ];
+            options.forEach(function(o){ var el = document.createElement('option'); el.value = o.v; el.textContent = o.t; if (habit.frequency && habit.frequency.type === o.v) el.selected = true; freqSelect.appendChild(el); });
+            freqSelect.style.width = '100%'; freqSelect.style.marginBottom = '8px';
+            modal.appendChild(freqLabel); modal.appendChild(freqSelect);
+
+            var daysWrapper = document.createElement('div');
+            daysWrapper.style.display = (habit.frequency && habit.frequency.type === 'specific') ? 'block' : 'none';
+            ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(day, idx){
+                var cb = document.createElement('label'); cb.style.marginRight='6px';
+                var input = document.createElement('input'); input.type='checkbox'; input.value=idx;
+                if (habit.frequency && habit.frequency.days && habit.frequency.days.indexOf(idx)!==-1) input.checked = true;
+                cb.appendChild(input); cb.appendChild(document.createTextNode(day)); daysWrapper.appendChild(cb);
+            });
+            modal.appendChild(daysWrapper);
+            freqSelect.addEventListener('change', function(){ daysWrapper.style.display = (this.value === 'specific') ? 'block' : 'none'; });
+
+            var startLabel = document.createElement('div'); startLabel.textContent = 'Start Date';
+            var startInput = document.createElement('input'); startInput.type='date'; startInput.value = habit.startDate || '';
+            startInput.style.marginBottom='8px'; startInput.style.width='100%'; modal.appendChild(startLabel); modal.appendChild(startInput);
+            var endLabel = document.createElement('div'); endLabel.textContent = 'End Date';
+            var endInput = document.createElement('input'); endInput.type='date'; endInput.value = habit.endDate || '';
+            endInput.style.marginBottom='8px'; endInput.style.width='100%'; modal.appendChild(endLabel); modal.appendChild(endInput);
+
+            var buttons = document.createElement('div'); buttons.style.display='flex'; buttons.style.gap='8px'; buttons.style.justifyContent='flex-end';
+            var saveBtn = document.createElement('button'); saveBtn.className='defer-modal-btn primary'; saveBtn.textContent='Save';
+            var cancelBtn = document.createElement('button'); cancelBtn.className='defer-modal-btn'; cancelBtn.textContent='Cancel';
+            buttons.appendChild(cancelBtn); buttons.appendChild(saveBtn); modal.appendChild(buttons);
+
+            backdrop.appendChild(modal); document.body.appendChild(backdrop);
+            backdrop.addEventListener('click', function(e){ if (e.target === backdrop) backdrop.remove(); });
+
+            cancelBtn.addEventListener('click', function(){ backdrop.remove(); });
+            saveBtn.addEventListener('click', function(){
+                habit.name = nameInput.value;
+                habit.frequency = habit.frequency || { type: 'everyday', days: [] };
+                habit.frequency.type = freqSelect.value;
+                if (freqSelect.value === 'specific') {
+                    var days = [];
+                    daysWrapper.querySelectorAll('input[type=checkbox]').forEach(function(cb){ if (cb.checked) days.push(parseInt(cb.value)); });
+                    habit.frequency.days = days;
+                } else {
+                    habit.frequency.days = [];
+                }
+                habit.startDate = startInput.value || '';
+                habit.endDate = endInput.value || '';
+
+                var raw = localStorage.getItem('planner-habit-goals');
+                var data = raw ? JSON.parse(raw) : { habits: [] };
+                var found = false;
+                for (var i=0;i<data.habits.length;i++) {
+                    if (data.habits[i].id === habit.id) { data.habits[i] = habit; found = true; break; }
+                }
+                if (!found) data.habits.push(habit);
+                localStorage.setItem('planner-habit-goals', JSON.stringify(data));
+                backdrop.remove();
+                loadWeeklyReview();
+            });
         }
 
         function discontinueHabit(habitId) {

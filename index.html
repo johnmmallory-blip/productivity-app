@@ -2604,6 +2604,242 @@
         .defer-modal-btn.primary:hover {
             background: #e65100;
         }
+
+        /* === Weekly Review Page === */
+        .weekly-review-page {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 28px;
+            overflow-y: auto;
+        }
+
+        .weekly-review-section {
+            margin: 16px 0;
+            border-bottom: 2px solid var(--section-border);
+            padding-bottom: 16px;
+        }
+
+        .weekly-review-section-title {
+            font-size: 12pt;
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .weekly-review-section-title.collapsed::before {
+            content: '▶';
+        }
+
+        .weekly-review-section-title.expanded::before {
+            content: '▼';
+        }
+
+        .weekly-review-section-content {
+            display: none;
+        }
+
+        .weekly-review-section-content.expanded {
+            display: block;
+        }
+
+        .weekly-review-empty-state {
+            font-size: 12px;
+            color: var(--ink-light);
+            padding: 16px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 4px;
+            line-height: 1.6;
+        }
+
+        .weekly-review-empty-state a {
+            color: var(--ink);
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .habit-review-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--rule-line-light);
+        }
+
+        .habit-review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .habit-review-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .habit-review-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .habit-review-btn {
+            padding: 3px 8px;
+            font-size: 10px;
+            border: 1px solid var(--rule-line);
+            border-radius: 3px;
+            background: rgba(255,255,255,0.2);
+            color: var(--ink-light);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .habit-review-btn:hover {
+            background: rgba(255,255,255,0.4);
+            color: var(--ink);
+        }
+
+        .habit-review-stats {
+            font-size: 11px;
+            color: var(--ink-light);
+            margin-bottom: 8px;
+        }
+
+        .habit-review-prompt {
+            font-size: 11px;
+            color: var(--ink);
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .habit-review-textarea {
+            width: 100%;
+            font-size: 11px;
+            font-family: inherit;
+            color: var(--ink);
+            border: 1px solid var(--rule-line);
+            border-radius: 4px;
+            padding: 6px;
+            background: rgba(255,255,255,0.2);
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .habit-review-textarea:focus {
+            outline: none;
+            background: rgba(255,255,255,0.4);
+            border-color: var(--section-border);
+        }
+
+        .goal-review-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--rule-line-light);
+        }
+
+        .goal-review-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .goal-completed-tasks {
+            font-size: 11px;
+            color: var(--ink-light);
+            margin-bottom: 8px;
+        }
+
+        .goal-completed-task-list {
+            margin-left: 16px;
+            margin-bottom: 8px;
+            font-size: 11px;
+            color: var(--ink);
+        }
+
+        .goal-task-item {
+            padding: 2px 0;
+        }
+
+        .goal-schedule-section {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--rule-line-light);
+        }
+
+        .goal-schedule-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .goal-task-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 6px;
+            align-items: center;
+        }
+
+        .goal-task-input {
+            flex: 1;
+            font-size: 10px;
+            font-family: inherit;
+            color: var(--ink);
+            border: 1px solid var(--rule-line);
+            border-radius: 3px;
+            padding: 4px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .goal-task-input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.4);
+            border-color: var(--section-border);
+        }
+
+        .goal-date-input {
+            font-size: 10px;
+            font-family: inherit;
+            color: var(--ink);
+            border: 1px solid var(--rule-line);
+            border-radius: 3px;
+            padding: 4px;
+            background: rgba(255,255,255,0.2);
+            width: 100px;
+        }
+
+        .goal-date-input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.4);
+            border-color: var(--section-border);
+        }
+
+        .goal-add-task-btn {
+            width: 22px;
+            height: 22px;
+            border: 1px solid var(--rule-line);
+            background: rgba(255,255,255,0.2);
+            color: var(--ink-light);
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .goal-add-task-btn:hover {
+            background: rgba(255,255,255,0.4);
+            color: var(--ink);
+        }
     </style>
 </head>
 <body>
@@ -2816,6 +3052,34 @@
                 </div>
             </div>
         </div><!-- /spread-rituals -->
+
+        <!-- ==================== WEEKLY REVIEW SPREAD ==================== -->
+        <div class="book-spread" id="spread-weekly-review">
+            <div class="left-section">
+                <div class="paper-texture"></div>
+                <div class="weekly-review-page" id="weeklyReviewLeft">
+                    <div class="weekly-review-section" id="habitGoalsReviewSection">
+                        <div class="weekly-review-section-title" id="habitGoalsTitle">Habit Goals</div>
+                        <div class="weekly-review-section-content" id="habitGoalsContent"></div>
+                    </div>
+                    <div class="weekly-review-section" id="achievementGoalsReviewSection">
+                        <div class="weekly-review-section-title" id="achievementGoalsTitle">Achievement Goals</div>
+                        <div class="weekly-review-section-content" id="achievementGoalsContent"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="paper-texture"></div>
+                <div class="weekly-review-page" id="weeklyReviewRight">
+                    <div class="weekly-review-section">
+                        <div class="weekly-review-section-title">Summary</div>
+                        <div class="weekly-review-section-content" id="weeklySummaryContent">
+                            <div class="weekly-review-empty-state">Use this space to reflect on your week and plan the coming week.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /spread-weekly-review -->
 
         <!-- ==================== GOALS SUMMARY SPREAD ==================== -->
         <div class="book-spread" id="spread-goals-summary">
@@ -3136,6 +3400,9 @@
         function loadViewData(view) {
             if (view === 'daily') {
                 updateDateHeader();
+            } else if (view === 'weekly-review') {
+                updateDateHeader();
+                loadWeeklyReview();
             } else if (view === 'rituals') {
                 loadRituals();
             } else if (view.startsWith('achievement-goals')) {
@@ -3170,6 +3437,7 @@
             var hasAnyGoal = hasAnyGoalContent();
             var items = [
                 { label: 'Today', view: 'daily', enabled: true },
+                { label: 'Weekly Review', view: 'weekly-review', enabled: true },
                 { label: 'Daily Rituals', view: 'rituals', enabled: true },
                 { label: 'Goals Summary', view: 'goals-summary', enabled: hasAnyGoal },
                 { label: 'Achievement Goals', view: 'achievement-goals-1', enabled: true },
@@ -3188,6 +3456,10 @@
                         if (item.view === 'daily') {
                             saveViewData(currentView);
                             navigateToToday();
+                        } else if (item.view === 'weekly-review') {
+                            saveViewData(currentView);
+                            switchView('weekly-review');
+                            loadWeeklyReview();
                         } else {
                             switchView(item.view);
                         }
@@ -3355,6 +3627,182 @@
             const state = loadDayState(currentDate);
             if (state) restorePage(state);
             refreshDailyHabitTasks();
+        }
+
+        // =============================================
+        // WEEKLY REVIEW
+        // =============================================
+        function getHabitGoalsData() {
+            var raw = localStorage.getItem('planner-habit-goals');
+            if (raw) return JSON.parse(raw);
+            return { habits: [], spreadCount: 1 };
+        }
+
+        function getAchievementGoalsData() {
+            var raw = localStorage.getItem('planner-achievement-goals');
+            if (raw) return JSON.parse(raw);
+            return { goals: [], spreadCount: 1 };
+        }
+
+        function loadWeeklyReview() {
+            // Populate Habit Goals review
+            var habitData = getHabitGoalsData();
+            var habitContainer = document.getElementById('habitGoalsContent');
+            habitContainer.innerHTML = '';
+
+            if (!habitData.habits || habitData.habits.length === 0) {
+                habitContainer.innerHTML = '<div class="weekly-review-empty-state">You do not currently have any active habits. Go to the <a onclick="switchView(\'habit-goals-1\')">Habit Goals</a> section if you wish to set some up.</div>';
+            } else {
+                habitData.habits.forEach(function(habit) {
+                    var item = document.createElement('div');
+                    item.className = 'habit-review-item';
+
+                    var header = document.createElement('div');
+                    header.className = 'habit-review-header';
+                    var name = document.createElement('div');
+                    name.className = 'habit-review-name';
+                    name.textContent = habit.name || '(Unnamed habit)';
+                    var actions = document.createElement('div');
+                    actions.className = 'habit-review-actions';
+                    var modifyBtn = document.createElement('button');
+                    modifyBtn.className = 'habit-review-btn';
+                    modifyBtn.textContent = 'Modify';
+                    modifyBtn.addEventListener('click', function() { openModifyHabitModal(habit); });
+                    var discontinueBtn = document.createElement('button');
+                    discontinueBtn.className = 'habit-review-btn';
+                    discontinueBtn.textContent = 'Discontinue';
+                    discontinueBtn.addEventListener('click', function() { discontinueHabit(habit.id); loadWeeklyReview(); });
+                    actions.appendChild(modifyBtn);
+                    actions.appendChild(discontinueBtn);
+
+                    header.appendChild(name);
+                    header.appendChild(actions);
+
+                    item.appendChild(header);
+
+                    // Stats placeholder: scheduled last week / completed last week
+                    var stats = document.createElement('div');
+                    stats.className = 'habit-review-stats';
+                    stats.textContent = 'Scheduled: ' + (habit.scheduledLastWeek || 0) + ' • Completed: ' + (habit.completedLastWeek || 0);
+                    item.appendChild(stats);
+
+                    // Prompt area
+                    var pct = 0;
+                    if (habit.scheduledLastWeek && habit.scheduledLastWeek > 0) pct = Math.round((habit.completedLastWeek || 0) / habit.scheduledLastWeek * 100);
+                    var prompt = document.createElement('div');
+                    prompt.className = 'habit-review-prompt';
+                    if (!habit.scheduledLastWeek || habit.scheduledLastWeek === 0) {
+                        prompt.textContent = 'No occurrences were scheduled last week.';
+                    } else if ((habit.completedLastWeek || 0) === 0) {
+                        prompt.textContent = 'It looks like you had a tough time keeping this habit going. What do you need to do differently this coming week to get back on track?';
+                        var ta = document.createElement('textarea');
+                        ta.className = 'habit-review-textarea';
+                        item.appendChild(prompt);
+                        item.appendChild(ta);
+                        habitContainer.appendChild(item);
+                        return;
+                    } else if (pct < 100) {
+                        prompt.textContent = 'Congrats for continuing to work on this habit! What will you do differently next week to get this back up to 100%?';
+                    } else {
+                        prompt.textContent = 'Awesome job! How has sticking with this habit impacted your week?';
+                    }
+
+                    item.appendChild(prompt);
+                    habitContainer.appendChild(item);
+                });
+            }
+
+            // Populate Achievement Goals review
+            var goalData = getAchievementGoalsData();
+            var goalContainer = document.getElementById('achievementGoalsContent');
+            goalContainer.innerHTML = '';
+            if (!goalData.goals || goalData.goals.length === 0) {
+                goalContainer.innerHTML = '<div class="weekly-review-empty-state">It looks like you do not have any active goals. Go to the <a onclick="switchView(\'achievement-goals-1\')">Achievement Goals</a> page to set some up!</div>';
+            } else {
+                goalData.goals.forEach(function(goal) {
+                    var gitem = document.createElement('div');
+                    gitem.className = 'goal-review-item';
+                    var gname = document.createElement('div');
+                    gname.className = 'goal-review-name';
+                    gname.textContent = goal.statement || '(Unnamed goal)';
+                    gitem.appendChild(gname);
+
+                    var completedTasks = document.createElement('div');
+                    completedTasks.className = 'goal-completed-tasks';
+                    completedTasks.textContent = 'Completed tasks related to this goal last week:';
+                    var taskList = document.createElement('div');
+                    taskList.className = 'goal-completed-task-list';
+                    // Placeholder - in future we will query tasks and filter by date/tag
+                    taskList.innerHTML = '<div class="goal-task-item">(no tasks found)</div>';
+                    gitem.appendChild(completedTasks);
+                    gitem.appendChild(taskList);
+
+                    // Scheduling UI
+                    var scheduleSection = document.createElement('div');
+                    scheduleSection.className = 'goal-schedule-section';
+                    var scheduleLabel = document.createElement('div');
+                    scheduleLabel.className = 'goal-schedule-label';
+                    scheduleLabel.textContent = 'Do you wish to schedule any tasks for the coming week related to this goal?';
+                    scheduleSection.appendChild(scheduleLabel);
+                    var row = document.createElement('div');
+                    row.className = 'goal-task-row';
+                    var taskInput = document.createElement('input');
+                    taskInput.className = 'goal-task-input';
+                    taskInput.placeholder = 'Task';
+                    var dateInput = document.createElement('input');
+                    dateInput.type = 'date';
+                    dateInput.className = 'goal-date-input';
+                    var addBtn = document.createElement('button');
+                    addBtn.className = 'goal-add-task-btn';
+                    addBtn.textContent = '+';
+                    addBtn.addEventListener('click', function() {
+                        // add to daily page for that date
+                        if (!taskInput.value || !dateInput.value) return;
+                        scheduleTaskOnDate(taskInput.value, dateInput.value);
+                        taskInput.value = '';
+                        dateInput.value = '';
+                    });
+                    row.appendChild(taskInput);
+                    row.appendChild(dateInput);
+                    row.appendChild(addBtn);
+                    scheduleSection.appendChild(row);
+                    gitem.appendChild(scheduleSection);
+
+                    goalContainer.appendChild(gitem);
+                });
+            }
+        }
+
+        function scheduleTaskOnDate(text, isoDate) {
+            var d = new Date(isoDate);
+            var key = 'planner-' + dateKey(d);
+            var raw = localStorage.getItem(key);
+            var state = raw ? JSON.parse(raw) : {};
+            if (!state.otherTasks) state.otherTasks = [];
+            state.otherTasks.push({ text: text, status: '' });
+            localStorage.setItem(key, JSON.stringify(state));
+        }
+
+        function openModifyHabitModal(habit) {
+            // simple modal to edit name/frequency/start/end - for now just prompt
+            var name = prompt('Habit name:', habit.name || '');
+            if (name === null) return;
+            habit.name = name;
+            // save back
+            var raw = localStorage.getItem('planner-habit-goals');
+            var data = raw ? JSON.parse(raw) : { habits: [] };
+            for (var i=0;i<data.habits.length;i++) {
+                if (data.habits[i].id === habit.id) { data.habits[i] = habit; break; }
+            }
+            localStorage.setItem('planner-habit-goals', JSON.stringify(data));
+            loadWeeklyReview();
+        }
+
+        function discontinueHabit(habitId) {
+            var raw = localStorage.getItem('planner-habit-goals');
+            var data = raw ? JSON.parse(raw) : { habits: [] };
+            data.habits = data.habits.filter(function(h) { return h.id !== habitId; });
+            localStorage.setItem('planner-habit-goals', JSON.stringify(data));
         }
 
         // =============================================

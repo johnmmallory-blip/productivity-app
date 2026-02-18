@@ -2642,10 +2642,6 @@
         }
 
         .weekly-review-section-content {
-            display: none;
-        }
-
-        .weekly-review-section-content.expanded {
             display: block;
         }
 
@@ -3369,7 +3365,8 @@
             var header = spread.querySelector('.page-nav') ||
                          spread.querySelector('.goals-page-header') ||
                          spread.querySelector('.rituals-page-header') ||
-                         spread.querySelector('.calendar-header');
+                         spread.querySelector('.calendar-header') ||
+                         spread.querySelector('.weekly-review-section-title');
             if (header) {
                 var containerRect = container.getBoundingClientRect();
                 var headerRect = header.getBoundingClientRect();
@@ -3721,6 +3718,7 @@
                 habitData.habits = computeWeeklyHabitStats(habitData.habits);
             }
             var habitContainer = document.getElementById('habitGoalsContent');
+            if (habitContainer) habitContainer.classList.add('expanded');
             habitContainer.innerHTML = '';
 
             if (!habitData.habits || habitData.habits.length === 0) {
@@ -3788,6 +3786,7 @@
             // Populate Achievement Goals review
             var goalData = getAchievementGoalsData();
             var goalContainer = document.getElementById('achievementGoalsContent');
+            if (goalContainer) goalContainer.classList.add('expanded');
             goalContainer.innerHTML = '';
             if (!goalData.goals || goalData.goals.length === 0) {
                 goalContainer.innerHTML = '<div class="weekly-review-empty-state">It looks like you do not have any active goals. Go to the <a onclick="switchView(\'achievement-goals-1\')">Achievement Goals</a> page to set some up!</div>';
@@ -3882,6 +3881,8 @@
             }
             // Load weekly reflection for current week
             if (document.getElementById('weeklyReflectionInput')) loadWeeklyReflection();
+            var summaryContent = document.getElementById('weeklySummaryContent');
+            if (summaryContent) summaryContent.classList.add('expanded');
         }
 
         function scheduleTaskOnDate(text, isoDate) {

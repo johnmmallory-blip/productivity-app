@@ -442,7 +442,19 @@
         }
 
         .notes-search-btn {
-            margin-left: auto;
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: var(--ink-light);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s, color 0.2s;
+            padding: 0;
         }
 
         .notes-search-btn:hover {
@@ -2703,10 +2715,9 @@
             <div class="notes-section">
                 <div class="notes-header">
                     <span>Notes</span>
-                </div>
-                <div class="notes-toolbar" id="notesToolbar">
                     <button class="notes-search-btn" onclick="openNotesSearchModal()" title="Search notes">🔍</button>
                 </div>
+                <div class="notes-toolbar" id="notesToolbar"></div>
                 <div class="notes-editor" id="notesEditor" contenteditable="true" data-placeholder="Jot down thoughts, ideas, observations..."></div>
             </div>
 

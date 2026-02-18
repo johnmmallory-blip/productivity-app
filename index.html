@@ -3053,6 +3053,9 @@
         <div class="book-spread" id="spread-weekly-review">
             <div class="left-section">
                 <div class="paper-texture"></div>
+                <div class="rituals-page-header">
+                    <span class="rituals-page-header-title">Weekly Review</span>
+                </div>
                 <div class="weekly-review-page" id="weeklyReviewLeft">
                     <div class="weekly-review-section" id="habitGoalsReviewSection">
                         <div class="weekly-review-section-title" id="habitGoalsTitle">Habit Goals</div>
@@ -3066,6 +3069,10 @@
             </div>
             <div class="right-section">
                 <div class="paper-texture"></div>
+                <div class="rituals-page-header-quote">
+                    <div class="rituals-quote-text">&ldquo;The only way to do great work is to love what you do.&rdquo;</div>
+                    <div class="rituals-quote-author">Steve Jobs</div>
+                </div>
                 <div class="weekly-review-page" id="weeklyReviewRight">
                     <div class="weekly-review-section">
                             <div class="weekly-review-section-title">Summary</div>
@@ -3460,9 +3467,18 @@
                 if (item.enabled) {
                     option.addEventListener('click', function() {
                         backdrop.remove();
-                        // Special handling for 'Today' - navigate to today instead of just switching view
+                        // Special handling for 'Today' - always switch to daily view and navigate to today
                         if (item.view === 'daily') {
                             saveViewData(currentView);
+                            // Switch view first if not on daily
+                            if (currentView !== 'daily') {
+                                var target = document.getElementById('spread-daily');
+                                document.querySelectorAll('.book-spread').forEach(function(s) { s.classList.remove('active'); });
+                                target.classList.add('active');
+                                currentView = 'daily';
+                                repositionHamburger();
+                            }
+                            // Then navigate to today
                             navigateToToday();
                         } else if (item.view === 'weekly-review') {
                             saveViewData(currentView);

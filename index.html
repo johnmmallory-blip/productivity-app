@@ -3184,7 +3184,13 @@
                 if (item.enabled) {
                     option.addEventListener('click', function() {
                         backdrop.remove();
-                        switchView(item.view);
+                        // Special handling for 'Today' - navigate to today instead of just switching view
+                        if (item.view === 'daily') {
+                            saveViewData(currentView);
+                            navigateToToday();
+                        } else {
+                            switchView(item.view);
+                        }
                     });
                 }
                 modal.appendChild(option);

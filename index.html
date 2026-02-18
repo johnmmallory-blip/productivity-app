@@ -6154,15 +6154,22 @@
             for (var i = 0; i < localStorage.length; i++) {
                 var key = localStorage.key(i);
                 
-                // Look for note entries (format: planner-YYYY-MM-DD-notes)
-                if (key && key.match(/^planner-\d{4}-\d{2}-\d{2}-notes$/)) {
-                    var dateStr = key.replace('planner-', '').replace('-notes', '');
-                    var notesHtml = localStorage.getItem(key);
+                // Look for planner entries (format: planner-YYYY-MM-DD)
+                if (key && key.match(/^planner-\d{4}-\d{2}-\d{2}$/)) {
+                    var dateStr = key.replace('planner-', '');
+                    var stateJson = localStorage.getItem(key);
                     
-                    if (notesHtml) {
-                        // Parse the notes HTML to extract content
-                        var results = searchNotesForDate(notesHtml, dateStr, filters);
-                        allResults = allResults.concat(results);
+                    if (stateJson) {
+                        try {
+                            var state = JSON.parse(stateJson);
+                            if (state.notes) {
+                                // Parse the notes HTML to extract content
+                                var results = searchNotesForDate(state.notes, dateStr, filters);
+                                allResults = allResults.concat(results);
+                            }
+                        } catch (e) {
+                            // Skip if JSON parse fails
+                        }
                     }
                 }
             }

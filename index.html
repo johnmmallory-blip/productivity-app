@@ -3072,11 +3072,22 @@
                 <div class="paper-texture"></div>
                 <div class="weekly-review-page" id="weeklyReviewRight">
                     <div class="weekly-review-section">
-                        <div class="weekly-review-section-title">Summary</div>
-                        <div class="weekly-review-section-content" id="weeklySummaryContent">
-                            <div class="weekly-review-empty-state">Use this space to reflect on your week and plan the coming week.</div>
+                            <div class="weekly-review-section-title">Summary</div>
+                            <div class="weekly-review-section-content" id="weeklySummaryContent">
+                                <div class="weekly-review-empty-state">Use this space to reflect on your week and plan the coming week.</div>
+                                <div style="margin-top:12px;">
+                                    <label style="font-weight:600;display:block;margin-bottom:6px;">Weekly Reflection</label>
+                                    <textarea id="weeklyReflectionInput" class="habit-review-textarea" placeholder="Write your reflection for this week..."></textarea>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                                        <div id="weeklyReflectionSavedAt" style="font-size:11px;color:var(--ink-faint);"></div>
+                                        <div>
+                                            <button class="defer-modal-btn" onclick="loadWeeklyReflection()">Reload</button>
+                                            <button class="defer-modal-btn primary" onclick="saveWeeklyReflection()">Save Reflection</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
                 </div>
             </div>
         </div><!-- /spread-weekly-review -->
@@ -3869,6 +3880,8 @@
                     goalContainer.appendChild(gitem);
                 });
             }
+            // Load weekly reflection for current week
+            if (document.getElementById('weeklyReflectionInput')) loadWeeklyReflection();
         }
 
         function scheduleTaskOnDate(text, isoDate) {
@@ -3879,6 +3892,53 @@
             if (!state.otherTasks) state.otherTasks = [];
             state.otherTasks.push({ text: text, status: '' });
             localStorage.setItem(key, JSON.stringify(state));
+        }
+
+        // Weekly reflection persistence
+        function getWeekStartDate(d) {
+            // return Monday of the week for date d
+            var dt = new Date(d);
+            var day = dt.getDay(); // 0 Sun .. 6 Sat
+            var diff = dt.getDate() - day + (day === 0 ? -6 : 1); // adjust when Sunday
+            var monday = new Date(dt.setDate(diff));
+            monday.setHours(0,0,0,0);
+            return monday;
+        }
+
+        function weekKeyForDate(d) {
+            var m = getWeekStartDate(d);
+            return 'weekly-' + dateKey(m);
+        }
+
+        function saveWeeklyReflection() {
+            var txt = document.getElementById('weeklyReflectionInput').value;
+            var key = weekKeyForDate(currentDate);
+            var payload = {
+                reflection: txt,
+                savedAt: new Date().toISOString()
+            };
+            localStorage.setItem(key, JSON.stringify(payload));
+            document.getElementById('weeklyReflectionSavedAt').textContent = 'Saved ' + (new Date()).toLocaleString();
+        }
+
+        function loadWeeklyReflection() {
+            var key = weekKeyForDate(currentDate);
+            var raw = localStorage.getItem(key);
+            if (!raw) {
+                document.getElementById('weeklyReflectionInput').value = '';
+                document.getElementById('weeklyReflectionSavedAt').textContent = '';
+                return null;
+            }
+            try {
+                var p = JSON.parse(raw);
+                document.getElementById('weeklyReflectionInput').value = p.reflection || '';
+                document.getElementById('weeklyReflectionSavedAt').textContent = p.savedAt ? ('Saved ' + new Date(p.savedAt).toLocaleString()) : '';
+                return p;
+            } catch (e) {
+                document.getElementById('weeklyReflectionInput').value = '';
+                document.getElementById('weeklyReflectionSavedAt').textContent = '';
+                return null;
+            }
         }
 
         function findCompletedTasksForGoal(goal) {

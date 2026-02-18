@@ -3486,6 +3486,15 @@
                             navigateToToday();
                         } else if (item.view === 'weekly-review') {
                             saveViewData(currentView);
+                            // Go to today if Sunday, else next Sunday
+                            var today = new Date();
+                            today.setHours(0,0,0,0);
+                            var day = today.getDay();
+                            if (day === 0) {
+                                currentDate = today;
+                            } else {
+                                currentDate = getUpcomingSunday(today);
+                            }
                             switchView('weekly-review');
                             loadWeeklyReview();
                         } else {
@@ -3905,6 +3914,40 @@
                     goalContainer.appendChild(gitem);
                 });
             }
+            // Update header with Sunday date
+            var sunday = getUpcomingSunday(currentDate);
+            var header = document.querySelector('#spread-weekly-review .rituals-page-header .rituals-page-header-title');
+            if (header) {
+                var month = MONTHS[sunday.getMonth()].toUpperCase().slice(0,3);
+                var day = sunday.getDate();
+                var year = sunday.getFullYear();
+                header.textContent = month + ' ' + day + ', ' + year + ' WEEKLY REVIEW';
+            }
+
+            // Add navigation buttons
+            var nav = document.querySelector('#spread-weekly-review .rituals-page-header');
+            if (nav && !nav.querySelector('.weekly-nav')) {
+                var prevBtn = document.createElement('button');
+                prevBtn.className = 'page-turn';
+                prevBtn.textContent = '\u2190 Prev';
+                prevBtn.onclick = function() {
+                    currentDate = getPreviousSunday(currentDate);
+                    loadWeeklyReview();
+                };
+                var nextBtn = document.createElement('button');
+                nextBtn.className = 'page-turn';
+                nextBtn.textContent = 'Next \u2192';
+                nextBtn.onclick = function() {
+                    currentDate = getUpcomingSunday(new Date(currentDate.getTime() + 86400000));
+                    loadWeeklyReview();
+                };
+                var navDiv = document.createElement('span');
+                navDiv.className = 'weekly-nav';
+                navDiv.appendChild(prevBtn);
+                navDiv.appendChild(nextBtn);
+                nav.appendChild(navDiv);
+            }
+
             // Load weekly reflection for current week
             if (document.getElementById('weeklyReflectionInput')) loadWeeklyReflection();
             var summaryContent = document.getElementById('weeklySummaryContent');
@@ -3919,17 +3962,43 @@
             if (!state.otherTasks) state.otherTasks = [];
             state.otherTasks.push({ text: text, status: '' });
             localStorage.setItem(key, JSON.stringify(state));
+
+            // Also save to weekly review for the Sunday of that week
+            var sunday = getUpcomingSunday(d);
+            var weekKey = 'weekly-' + dateKey(sunday);
+            var weekRaw = localStorage.getItem(weekKey);
+            var weekState = weekRaw ? JSON.parse(weekRaw) : {};
+            if (!weekState.scheduledTasks) weekState.scheduledTasks = [];
+            weekState.scheduledTasks.push({ text: text, date: isoDate });
+            localStorage.setItem(weekKey, JSON.stringify(weekState));
         }
 
         // Weekly reflection persistence
-        function getWeekStartDate(d) {
-            // return Monday of the week for date d
+        function getUpcomingSunday(d) {
+            // Return the upcoming Sunday for date d
             var dt = new Date(d);
             var day = dt.getDay(); // 0 Sun .. 6 Sat
-            var diff = dt.getDate() - day + (day === 0 ? -6 : 1); // adjust when Sunday
-            var monday = new Date(dt.setDate(diff));
-            monday.setHours(0,0,0,0);
-            return monday;
+            var diff = 7 - day;
+            var sunday = new Date(dt);
+            sunday.setDate(dt.getDate() + diff);
+            sunday.setHours(0,0,0,0);
+            return sunday;
+        }
+
+        function getPreviousSunday(d) {
+            var dt = new Date(d);
+            var day = dt.getDay();
+            var diff = day === 0 ? 0 : -day;
+            var sunday = new Date(dt);
+            sunday.setDate(dt.getDate() + diff);
+            sunday.setHours(0,0,0,0);
+            return sunday;
+        }
+
+        function weekKeyForDate(d) {
+            // Use Sunday as the week key
+            var sunday = getUpcomingSunday(d);
+            return 'weekly-' + dateKey(sunday);
         }
 
         function weekKeyForDate(d) {

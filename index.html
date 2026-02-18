@@ -1424,6 +1424,10 @@
         #spread-rituals .right-section {
             flex-direction: column;
         }
+        #spread-weekly-review .left-section,
+        #spread-weekly-review .right-section {
+            flex-direction: column;
+        }
         #spread-goals-summary .left-section,
         [id^="spread-achievement-goals"] .left-section,
         [id^="spread-habit-goals"] .left-section {
@@ -3729,8 +3733,9 @@
         function loadWeeklyReview() {
             // Populate Habit Goals review
             var habitData = getHabitGoalsData();
-            // Compute weekly stats
+            // Filter out unnamed habits
             if (habitData.habits && habitData.habits.length > 0) {
+                habitData.habits = habitData.habits.filter(function(h) { return h.name && h.name.trim(); });
                 habitData.habits = computeWeeklyHabitStats(habitData.habits);
             }
             var habitContainer = document.getElementById('habitGoalsContent');
@@ -3741,6 +3746,9 @@
                 habitContainer.innerHTML = '<div class="weekly-review-empty-state">You do not currently have any active habits. Go to the <a onclick="switchView(\'habit-goals-1\')">Habit Goals</a> section if you wish to set some up.</div>';
             } else {
                 habitData.habits.forEach(function(habit) {
+                    // Skip unnamed habits
+                    if (!habit.name || !habit.name.trim()) return;
+                    
                     var item = document.createElement('div');
                     item.className = 'habit-review-item';
 
@@ -3748,7 +3756,7 @@
                     header.className = 'habit-review-header';
                     var name = document.createElement('div');
                     name.className = 'habit-review-name';
-                    name.textContent = habit.name || '(Unnamed habit)';
+                    name.textContent = habit.name;
                     var actions = document.createElement('div');
                     actions.className = 'habit-review-actions';
                     var modifyBtn = document.createElement('button');
@@ -3804,15 +3812,17 @@
             var goalContainer = document.getElementById('achievementGoalsContent');
             if (goalContainer) goalContainer.classList.add('expanded');
             goalContainer.innerHTML = '';
-            if (!goalData.goals || goalData.goals.length === 0) {
+            // Filter out unnamed goals
+            var namedGoals = goalData.goals ? goalData.goals.filter(function(g) { return g.statement && g.statement.trim(); }) : [];
+            if (namedGoals.length === 0) {
                 goalContainer.innerHTML = '<div class="weekly-review-empty-state">It looks like you do not have any active goals. Go to the <a onclick="switchView(\'achievement-goals-1\')">Achievement Goals</a> page to set some up!</div>';
             } else {
-                goalData.goals.forEach(function(goal) {
+                namedGoals.forEach(function(goal) {
                     var gitem = document.createElement('div');
                     gitem.className = 'goal-review-item';
                     var gname = document.createElement('div');
                     gname.className = 'goal-review-name';
-                    gname.textContent = goal.statement || '(Unnamed goal)';
+                    gname.textContent = goal.statement;
                     gitem.appendChild(gname);
 
                     var completedTasks = document.createElement('div');

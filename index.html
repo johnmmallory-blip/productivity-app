@@ -6177,6 +6177,24 @@
             return allResults;
         }
 
+        function hexToRgb(hex) {
+            // Convert #FFFF00 to rgb(255, 255, 0)
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? 'rgb(' + parseInt(result[1], 16) + ', ' + parseInt(result[2], 16) + ', ' + parseInt(result[3], 16) + ')' : hex;
+        }
+
+        function colorsMatch(color1, color2) {
+            // Normalize colors for comparison
+            var c1 = color1.toLowerCase().replace(/\s/g, '');
+            var c2 = color2.toLowerCase().replace(/\s/g, '');
+            
+            // If either is hex, convert both to RGB for comparison
+            if (c1.startsWith('#')) c1 = hexToRgb(c1).replace(/\s/g, '');
+            if (c2.startsWith('#')) c2 = hexToRgb(c2).replace(/\s/g, '');
+            
+            return c1 === c2;
+        }
+
         function searchNotesForDate(notesHtml, dateStr, filters) {
             var results = [];
             var processed = {};
@@ -6237,7 +6255,10 @@
             // Case 2: Only highlight filter
             else if (hasHighlightFilter && !hasTagFilter && !hasTextFilter) {
                 highlights.forEach(function(hl) {
-                    if (filters.highlights.includes(hl.color)) {
+                    var isMatch = filters.highlights.some(function(filterColor) {
+                        return colorsMatch(hl.color, filterColor);
+                    });
+                    if (isMatch) {
                         var key = 'hl-' + hl.text + '-' + dateStr;
                         if (!processed[key]) {
                             results.push({
@@ -6280,7 +6301,10 @@
             // Case 4: Highlight + Text (find highlighted text that contains the search text)
             else if (hasHighlightFilter && hasTextFilter && !hasTagFilter) {
                 highlights.forEach(function(hl) {
-                    if (filters.highlights.includes(hl.color)) {
+                    var isColorMatch = filters.highlights.some(function(filterColor) {
+                        return colorsMatch(hl.color, filterColor);
+                    });
+                    if (isColorMatch) {
                         var lowerHl = hl.text.toLowerCase();
                         if (lowerHl.includes(filters.text)) {
                             var key = 'hl-txt-' + hl.text + '-' + dateStr;
@@ -6329,7 +6353,10 @@
             else if (hasTagFilter && hasHighlightFilter && !hasTextFilter) {
                 if (tags.includes(filters.tag)) {
                     highlights.forEach(function(hl) {
-                        if (filters.highlights.includes(hl.color)) {
+                        var isColorMatch = filters.highlights.some(function(filterColor) {
+                            return colorsMatch(hl.color, filterColor);
+                        });
+                        if (isColorMatch) {
                             var key = 'tag-hl-' + hl.text + '-' + dateStr;
                             if (!processed[key]) {
                                 results.push({
@@ -6350,7 +6377,10 @@
             else if (hasTagFilter && hasHighlightFilter && hasTextFilter) {
                 if (tags.includes(filters.tag)) {
                     highlights.forEach(function(hl) {
-                        if (filters.highlights.includes(hl.color)) {
+                        var isColorMatch = filters.highlights.some(function(filterColor) {
+                            return colorsMatch(hl.color, filterColor);
+                        });
+                        if (isColorMatch) {
                             var lowerHl = hl.text.toLowerCase();
                             if (lowerHl.includes(filters.text)) {
                                 var key = 'tag-hl-txt-' + hl.text + '-' + dateStr;

@@ -436,6 +436,30 @@
             letter-spacing: 1px;
             text-transform: uppercase;
             margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .notes-search-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: var(--ink-light);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s, color 0.2s;
+            position: relative;
+        }
+
+        .notes-search-btn:hover {
+            background: rgba(0,0,0,0.08);
+            color: var(--ink);
         }
 
         .notes-toolbar {
@@ -604,6 +628,261 @@
             border: 2px solid transparent;
         }
         .notes-tag-color-dot:hover, .notes-tag-color-dot.selected { border-color: var(--ink-light); }
+
+        /* === Notes Search === */
+        .notes-search-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notes-search-modal {
+            background: var(--paper-light);
+            border: 1px solid var(--section-border);
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 70vh;
+            overflow-y: auto;
+            font-family: inherit;
+        }
+
+        .notes-search-modal h3 {
+            font-size: 12pt;
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .notes-search-modal-close {
+            font-size: 16px;
+            color: var(--ink-faint);
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            transition: background 0.2s;
+        }
+
+        .notes-search-modal-close:hover {
+            background: rgba(0,0,0,0.1);
+            color: var(--ink);
+        }
+
+        .search-filter-group {
+            margin-bottom: 16px;
+        }
+
+        .search-filter-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ink-light);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .search-by-tag-select {
+            width: 100%;
+            font-size: 11px;
+            font-family: inherit;
+            color: var(--ink);
+            border: 1px solid var(--rule-line);
+            border-radius: 4px;
+            padding: 6px;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .search-by-highlight-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .search-highlight-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .search-highlight-checkbox input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .search-highlight-swatch {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid var(--section-border);
+            flex-shrink: 0;
+        }
+
+        .search-text-input {
+            width: 100%;
+            font-size: 11px;
+            font-family: inherit;
+            color: var(--ink);
+            border: 1px solid var(--rule-line);
+            border-radius: 4px;
+            padding: 6px 10px;
+            background: transparent;
+        }
+
+        .search-text-input::placeholder {
+            color: var(--ink-faint);
+        }
+
+        .search-modal-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .search-modal-btn {
+            flex: 1;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-family: inherit;
+            font-weight: 600;
+            border: 1px solid var(--section-border);
+            border-radius: 4px;
+            background: transparent;
+            color: var(--ink-light);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-modal-btn:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .search-modal-btn.primary {
+            background: rgba(0,0,0,0.1);
+            color: var(--ink);
+            border-color: var(--ink-light);
+        }
+
+        .search-modal-btn.primary:hover {
+            background: rgba(0,0,0,0.15);
+        }
+
+        .notes-search-results-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 45%;
+            height: 100vh;
+            background: var(--paper);
+            border-right: 2px solid var(--section-border);
+            flex-direction: column;
+            display: none;
+            z-index: 250;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .notes-search-results-panel.open {
+            display: flex;
+        }
+
+        .search-results-header {
+            padding: 14px 20px;
+            border-bottom: 2px solid var(--section-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .search-results-title {
+            font-size: 10pt;
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .search-results-close {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: var(--ink-faint);
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .search-results-close:hover {
+            background: rgba(0,0,0,0.08);
+            color: var(--ink);
+        }
+
+        .search-results-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--rule-line-light);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-result-item:hover {
+            background: rgba(0,0,0,0.04);
+        }
+
+        .search-result-snippet {
+            font-size: 12px;
+            color: var(--ink);
+            line-height: 1.5;
+            margin-bottom: 4px;
+        }
+
+        .search-result-meta {
+            font-size: 10px;
+            color: var(--ink-faint);
+            margin-top: 4px;
+        }
+
+        .search-result-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--ink-faint);
+            font-size: 12px;
+        }
 
         /* Daily Win Section (fixed at bottom) */
         .daily-win-section {
@@ -2434,7 +2713,10 @@
 
             <!-- Notes (78%) -->
             <div class="notes-section">
-                <div class="notes-header">Notes</div>
+                <div class="notes-header">
+                    <span>Notes</span>
+                    <button class="notes-search-btn" onclick="openNotesSearchModal()" title="Search notes">🔍</button>
+                </div>
                 <div class="notes-toolbar" id="notesToolbar"></div>
                 <div class="notes-editor" id="notesEditor" contenteditable="true" data-placeholder="Jot down thoughts, ideas, observations..."></div>
             </div>
@@ -2446,6 +2728,17 @@
             </div>
         </div>
         </div><!-- /spread-daily -->
+
+        <!-- Notes Search Results Panel -->
+        <div class="notes-search-results-panel" id="notesSearchResultsPanel">
+            <div class="search-results-header">
+                <div class="search-results-title">Search Results</div>
+                <button class="search-results-close" onclick="closeNotesSearchResults()" title="Close search results">✕</button>
+            </div>
+            <div class="search-results-content" id="searchResultsContent">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
 
         <!-- ==================== DAILY RITUALS SPREAD ==================== -->
         <div class="book-spread" id="spread-rituals">
@@ -2608,6 +2901,9 @@
         </div><!-- /spread-ideal-week -->
 
     </div>
+
+    <!-- Notes Search Modal -->
+    <div id="notesSearchModalContainer"></div>
 
     <script>
         // =============================================
@@ -5746,6 +6042,287 @@
             if (notesTagModal && !notesTagModal.contains(e.target)) {
                 notesCloseTagModal();
             }
+        }
+
+        // =============================================
+        // NOTES SEARCH
+        // =============================================
+        var notesSearchModal = null;
+        var currentSearchFilters = {
+            tag: null,
+            highlights: [],
+            text: ''
+        };
+
+        function openNotesSearchModal() {
+            // Create backdrop
+            var backdrop = document.createElement('div');
+            backdrop.className = 'notes-search-modal-backdrop';
+
+            // Create modal
+            notesSearchModal = document.createElement('div');
+            notesSearchModal.className = 'notes-search-modal';
+
+            var tags = getNoteTags();
+            var allHighlights = NOTE_HIGHLIGHT_COLORS || ['#FFFF00', '#FF6347', '#90EE90', '#87CEEB'];
+
+            var html = '<h3>Search Notes<button class="notes-search-modal-close" onclick="closeNotesSearchModal()">✕</button></h3>';
+
+            // By Tag filter
+            html += '<div class="search-filter-group">' +
+                '<label class="search-filter-label">By Tag</label>' +
+                '<select class="search-by-tag-select" id="searchTagSelect">' +
+                '<option value="">All Tags</option>';
+            tags.forEach(function(tag) {
+                html += '<option value="' + tag.label + '">' + tag.label + '</option>';
+            });
+            html += '</select></div>';
+
+            // By Highlight filter
+            html += '<div class="search-filter-group">' +
+                '<label class="search-filter-label">By Highlight Color</label>' +
+                '<div class="search-by-highlight-options" id="searchHighlightOptions">';
+            allHighlights.forEach(function(color) {
+                var colorName = 'Color';
+                if (color === '#FFFF00') colorName = 'Yellow';
+                else if (color === '#FF6347') colorName = 'Red';
+                else if (color === '#90EE90') colorName = 'Green';
+                else if (color === '#87CEEB') colorName = 'Blue';
+                html += '<label class="search-highlight-checkbox">' +
+                    '<input type="checkbox" value="' + color + '"> ' +
+                    '<span class="search-highlight-swatch" style="background:' + color + '"></span> ' +
+                    colorName +
+                    '</label>';
+            });
+            html += '</div></div>';
+
+            // Text search
+            html += '<div class="search-filter-group">' +
+                '<label class="search-filter-label">Text Search</label>' +
+                '<input type="text" class="search-text-input" id="searchTextInput" placeholder="Search text..."></div>';
+
+            // Buttons
+            html += '<div class="search-modal-buttons">' +
+                '<button class="search-modal-btn" onclick="closeNotesSearchModal()">Cancel</button>' +
+                '<button class="search-modal-btn primary" onclick="executeNotesSearch()">Search</button>' +
+                '</div>';
+
+            notesSearchModal.innerHTML = html;
+            backdrop.appendChild(notesSearchModal);
+            document.body.appendChild(backdrop);
+
+            // Close on backdrop click
+            backdrop.addEventListener('click', function(e) {
+                if (e.target === backdrop) closeNotesSearchModal();
+            });
+
+            // Focus text input
+            setTimeout(function() { document.getElementById('searchTextInput').focus(); }, 50);
+        }
+
+        function closeNotesSearchModal() {
+            if (notesSearchModal && notesSearchModal.parentElement) {
+                notesSearchModal.parentElement.remove();
+                notesSearchModal = null;
+            }
+        }
+
+        function executeNotesSearch() {
+            // Collect filters from modal
+            var tagSelect = document.getElementById('searchTagSelect');
+            var highlightCheckboxes = document.querySelectorAll('#searchHighlightOptions input[type="checkbox"]:checked');
+            var textInput = document.getElementById('searchTextInput');
+
+            currentSearchFilters.tag = tagSelect.value || null;
+            currentSearchFilters.highlights = Array.from(highlightCheckboxes).map(function(cb) { return cb.value; });
+            currentSearchFilters.text = (textInput.value || '').trim().toLowerCase();
+
+            // Get notes content
+            var editor = document.getElementById('notesEditor');
+            if (!editor) { closeNotesSearchModal(); return; }
+
+            // Extract text and metadata from editor
+            var notesContent = extractNotesContent(editor);
+
+            // Filter and search
+            var results = searchNotes(notesContent, currentSearchFilters);
+
+            // Display results
+            displaySearchResults(results);
+
+            // Close modal and show results panel
+            closeNotesSearchModal();
+        }
+
+        function extractNotesContent(editor) {
+            var content = [];
+            var fullText = editor.innerText || '';
+            var sentences = fullText.split(/[.!?]+/).filter(function(s) { return s.trim().length > 0; });
+
+            // Extract tags from DOM
+            var tags = [];
+            editor.querySelectorAll('.notes-tag-chip').forEach(function(chip) {
+                tags.push(chip.getAttribute('data-tag'));
+            });
+
+            // Get highlight colors applied to text
+            var highlights = [];
+            var walker = document.createTreeWalker(
+                editor,
+                NodeFilter.SHOW_ELEMENT,
+                null,
+                false
+            );
+
+            var node;
+            while (node = walker.nextNode()) {
+                if (node.style.backgroundColor && node.style.backgroundColor !== 'transparent' && node.style.backgroundColor !== '' && node.style.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+                    var text = node.innerText || node.textContent || '';
+                    if (text.trim()) {
+                        highlights.push({
+                            text: text.trim(),
+                            color: node.style.backgroundColor
+                        });
+                    }
+                }
+            }
+
+            return {
+                fullText: fullText,
+                sentences: sentences,
+                tags: tags,
+                highlights: highlights
+            };
+        }
+
+        function searchNotes(notesContent, filters) {
+            var results = [];
+            var processed = {};
+
+            // By tag filter
+            if (filters.tag) {
+                if (notesContent.tags.includes(filters.tag)) {
+                    results.push({
+                        type: 'tag-match',
+                        text: 'Tagged as: ' + filters.tag,
+                        snippet: notesContent.fullText.substring(0, 100) + (notesContent.fullText.length > 100 ? '...' : ''),
+                        matchType: 'tag'
+                    });
+                }
+            }
+
+            // By highlight filter
+            if (filters.highlights.length > 0) {
+                notesContent.highlights.forEach(function(hl) {
+                    if (filters.highlights.includes(hl.color)) {
+                        var key = 'hl-' + hl.text;
+                        if (!processed[key]) {
+                            results.push({
+                                type: 'highlight-match',
+                                text: hl.text,
+                                snippet: hl.text,
+                                matchType: 'highlight',
+                                color: hl.color
+                            });
+                            processed[key] = true;
+                        }
+                    }
+                });
+            }
+
+            // By text search
+            if (filters.text) {
+                notesContent.sentences.forEach(function(sentence) {
+                    var lowerSentence = sentence.toLowerCase();
+                    if (lowerSentence.includes(filters.text)) {
+                        // Find the matching portion
+                        var idx = lowerSentence.indexOf(filters.text);
+                        var start = Math.max(0, idx - 20);
+                        var end = Math.min(sentence.length, idx + filters.text.length + 20);
+                        var snippet = (start > 0 ? '...' : '') + sentence.substring(start, end) + (end < sentence.length ? '...' : '');
+
+                        var key = 'txt-' + snippet;
+                        if (!processed[key]) {
+                            results.push({
+                                type: 'text-match',
+                                text: filters.text,
+                                snippet: snippet,
+                                matchType: 'text'
+                            });
+                            processed[key] = true;
+                        }
+                    }
+                });
+            }
+
+            // If no filters, return full notes
+            if (!filters.tag && filters.highlights.length === 0 && !filters.text) {
+                notesContent.sentences.forEach(function(sentence) {
+                    if (sentence.trim()) {
+                        results.push({
+                            type: 'full-note',
+                            text: sentence.trim(),
+                            snippet: sentence.trim().substring(0, 120) + (sentence.trim().length > 120 ? '...' : ''),
+                            matchType: 'text'
+                        });
+                    }
+                });
+            }
+
+            return results;
+        }
+
+        function displaySearchResults(results) {
+            var panel = document.getElementById('notesSearchResultsPanel');
+            var content = document.getElementById('searchResultsContent');
+
+            if (results.length === 0) {
+                content.innerHTML = '<div class="search-result-empty">No results found</div>';
+            } else {
+                content.innerHTML = '';
+                results.forEach(function(result) {
+                    var item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    item.style.cursor = 'pointer';
+
+                    var snippet = document.createElement('div');
+                    snippet.className = 'search-result-snippet';
+                    snippet.textContent = result.snippet;
+
+                    var meta = document.createElement('div');
+                    meta.className = 'search-result-meta';
+                    if (result.matchType === 'tag') {
+                        meta.textContent = '🏷 Tag Match';
+                    } else if (result.matchType === 'highlight') {
+                        meta.textContent = '💛 Highlight Match';
+                    } else {
+                        meta.textContent = '📝 Text Match';
+                    }
+
+                    item.appendChild(snippet);
+                    item.appendChild(meta);
+
+                    item.addEventListener('click', function() {
+                        // Scroll notes editor to show the matching text
+                        var editor = document.getElementById('notesEditor');
+                        if (editor && result.snippet) {
+                            editor.focus();
+                            // Simple scroll to top for now
+                            editor.scrollTop = 0;
+                        }
+                    });
+
+                    content.appendChild(item);
+                });
+            }
+
+            // Show results panel
+            panel.classList.add('open');
+        }
+
+        function closeNotesSearchResults() {
+            var panel = document.getElementById('notesSearchResultsPanel');
+            panel.classList.remove('open');
         }
 
         // =============================================

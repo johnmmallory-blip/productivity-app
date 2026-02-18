@@ -6137,15 +6137,8 @@
             currentSearchFilters.highlights = Array.from(highlightCheckboxes).map(function(cb) { return cb.value; });
             currentSearchFilters.text = (textInput.value || '').trim().toLowerCase();
 
-            // Get notes content
-            var editor = document.getElementById('notesEditor');
-            if (!editor) { closeNotesSearchModal(); return; }
-
-            // Extract text and metadata from editor
-            var notesContent = extractNotesContent(editor);
-
-            // Filter and search
-            var results = searchNotes(notesContent, currentSearchFilters);
+            // Search all dates' notes
+            var results = searchAllNotes(currentSearchFilters);
 
             // Display results
             displaySearchResults(results);
@@ -6154,21 +6147,51 @@
             closeNotesSearchModal();
         }
 
-        function extractNotesContent(editor) {
-            var content = [];
-            var fullText = editor.innerText || '';
+        function searchAllNotes(filters) {
+            var allResults = [];
+
+            // Get all dates from localStorage
+            for (var i = 0; i < localStorage.length; i++) {
+                var key = localStorage.key(i);
+                
+                // Look for note entries (format: planner-YYYY-MM-DD-notes)
+                if (key && key.match(/^planner-\d{4}-\d{2}-\d{2}-notes$/)) {
+                    var dateStr = key.replace('planner-', '').replace('-notes', '');
+                    var notesHtml = localStorage.getItem(key);
+                    
+                    if (notesHtml) {
+                        // Parse the notes HTML to extract content
+                        var results = searchNotesForDate(notesHtml, dateStr, filters);
+                        allResults = allResults.concat(results);
+                    }
+                }
+            }
+
+            return allResults;
+        }
+
+        function searchNotesForDate(notesHtml, dateStr, filters) {
+            var results = [];
+            var processed = {};
+
+            // Create a temporary div to parse HTML
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = notesHtml;
+
+            // Extract text content
+            var fullText = tempDiv.innerText || tempDiv.textContent || '';
             var sentences = fullText.split(/[.!?]+/).filter(function(s) { return s.trim().length > 0; });
 
-            // Extract tags from DOM
+            // Extract tags
             var tags = [];
-            editor.querySelectorAll('.notes-tag-chip').forEach(function(chip) {
+            tempDiv.querySelectorAll('.notes-tag-chip').forEach(function(chip) {
                 tags.push(chip.getAttribute('data-tag'));
             });
 
-            // Get highlight colors applied to text
+            // Extract highlights
             var highlights = [];
             var walker = document.createTreeWalker(
-                editor,
+                tempDiv,
                 NodeFilter.SHOW_ELEMENT,
                 null,
                 false
@@ -6187,42 +6210,32 @@
                 }
             }
 
-            return {
-                fullText: fullText,
-                sentences: sentences,
-                tags: tags,
-                highlights: highlights
-            };
-        }
-
-        function searchNotes(notesContent, filters) {
-            var results = [];
-            var processed = {};
-
             // By tag filter
             if (filters.tag) {
-                if (notesContent.tags.includes(filters.tag)) {
+                if (tags.includes(filters.tag)) {
                     results.push({
                         type: 'tag-match',
                         text: 'Tagged as: ' + filters.tag,
-                        snippet: notesContent.fullText.substring(0, 100) + (notesContent.fullText.length > 100 ? '...' : ''),
-                        matchType: 'tag'
+                        snippet: fullText.substring(0, 100) + (fullText.length > 100 ? '...' : ''),
+                        matchType: 'tag',
+                        date: dateStr
                     });
                 }
             }
 
             // By highlight filter
             if (filters.highlights.length > 0) {
-                notesContent.highlights.forEach(function(hl) {
+                highlights.forEach(function(hl) {
                     if (filters.highlights.includes(hl.color)) {
-                        var key = 'hl-' + hl.text;
+                        var key = 'hl-' + hl.text + '-' + dateStr;
                         if (!processed[key]) {
                             results.push({
                                 type: 'highlight-match',
                                 text: hl.text,
                                 snippet: hl.text,
                                 matchType: 'highlight',
-                                color: hl.color
+                                color: hl.color,
+                                date: dateStr
                             });
                             processed[key] = true;
                         }
@@ -6232,7 +6245,7 @@
 
             // By text search
             if (filters.text) {
-                notesContent.sentences.forEach(function(sentence) {
+                sentences.forEach(function(sentence) {
                     var lowerSentence = sentence.toLowerCase();
                     if (lowerSentence.includes(filters.text)) {
                         // Find the matching portion
@@ -6241,13 +6254,14 @@
                         var end = Math.min(sentence.length, idx + filters.text.length + 20);
                         var snippet = (start > 0 ? '...' : '') + sentence.substring(start, end) + (end < sentence.length ? '...' : '');
 
-                        var key = 'txt-' + snippet;
+                        var key = 'txt-' + snippet + '-' + dateStr;
                         if (!processed[key]) {
                             results.push({
                                 type: 'text-match',
                                 text: filters.text,
                                 snippet: snippet,
-                                matchType: 'text'
+                                matchType: 'text',
+                                date: dateStr
                             });
                             processed[key] = true;
                         }
@@ -6255,15 +6269,16 @@
                 });
             }
 
-            // If no filters, return full notes
+            // If no filters, return full notes for this date
             if (!filters.tag && filters.highlights.length === 0 && !filters.text) {
-                notesContent.sentences.forEach(function(sentence) {
+                sentences.forEach(function(sentence) {
                     if (sentence.trim()) {
                         results.push({
                             type: 'full-note',
                             text: sentence.trim(),
                             snippet: sentence.trim().substring(0, 120) + (sentence.trim().length > 120 ? '...' : ''),
-                            matchType: 'text'
+                            matchType: 'text',
+                            date: dateStr
                         });
                     }
                 });
@@ -6291,23 +6306,33 @@
 
                     var meta = document.createElement('div');
                     meta.className = 'search-result-meta';
+                    var metaText = '';
                     if (result.matchType === 'tag') {
-                        meta.textContent = '🏷 Tag Match';
+                        metaText += '🏷 Tag Match | ';
                     } else if (result.matchType === 'highlight') {
-                        meta.textContent = '💛 Highlight Match';
+                        metaText += '💛 Highlight Match | ';
                     } else {
-                        meta.textContent = '📝 Text Match';
+                        metaText += '📝 Text Match | ';
                     }
+                    metaText += (result.date || 'Today');
+                    meta.textContent = metaText;
 
                     item.appendChild(snippet);
                     item.appendChild(meta);
 
                     item.addEventListener('click', function() {
-                        // Scroll notes editor to show the matching text
+                        // Navigate to the date if different from current date
+                        if (result.date) {
+                            var parts = result.date.split('-');
+                            var resultDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                            currentDate = resultDate;
+                            updateDateHeader();
+                            loadPage();
+                        }
+                        // Focus notes editor
                         var editor = document.getElementById('notesEditor');
-                        if (editor && result.snippet) {
+                        if (editor) {
                             editor.focus();
-                            // Simple scroll to top for now
                             editor.scrollTop = 0;
                         }
                     });

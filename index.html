@@ -3794,8 +3794,44 @@
                     completedTasks.textContent = 'Completed tasks related to this goal last week:';
                     var taskList = document.createElement('div');
                     taskList.className = 'goal-completed-task-list';
-                    // Placeholder - in future we will query tasks and filter by date/tag
-                    taskList.innerHTML = '<div class="goal-task-item">(no tasks found)</div>';
+                    // Query completed tasks for this goal
+                    var completed = findCompletedTasksForGoal(goal);
+                    if (completed.length === 0) {
+                        taskList.innerHTML = '<div class="goal-task-item">(no tasks found)</div>';
+                    } else {
+                        completed.forEach(function(t) {
+                            var row = document.createElement('div');
+                            row.className = 'goal-task-item';
+                            var txt = document.createElement('span'); txt.textContent = t.text + ' — ' + (t.date.getMonth()+1) + '/' + t.date.getDate();
+                            row.appendChild(txt);
+                            if (!t.linked) {
+                                var linkBtn = document.createElement('button');
+                                linkBtn.className = 'habit-review-btn';
+                                linkBtn.textContent = 'Link';
+                                linkBtn.style.marginLeft = '8px';
+                                linkBtn.addEventListener('click', function() {
+                                    // attach goalId to the task in storage
+                                    var raw = localStorage.getItem(t.dayKey);
+                                    if (!raw) return;
+                                    var s = JSON.parse(raw);
+                                    if (s.otherTasks && Array.isArray(s.otherTasks)) {
+                                        for (var i=0;i<s.otherTasks.length;i++) {
+                                            if (s.otherTasks[i].text === t.text) {
+                                                s.otherTasks[i].goalId = goal.id;
+                                                break;
+                                            }
+                                        }
+                                        localStorage.setItem(t.dayKey, JSON.stringify(s));
+                                        loadWeeklyReview();
+                                    }
+                                });
+                                row.appendChild(linkBtn);
+                            } else {
+                                var linkedLabel = document.createElement('span'); linkedLabel.textContent = ' (linked)'; linkedLabel.style.color = 'var(--ink-faint)'; linkedLabel.style.marginLeft='8px'; row.appendChild(linkedLabel);
+                            }
+                            taskList.appendChild(row);
+                        });
+                    }
                     gitem.appendChild(completedTasks);
                     gitem.appendChild(taskList);
 
@@ -3843,6 +3879,43 @@
             if (!state.otherTasks) state.otherTasks = [];
             state.otherTasks.push({ text: text, status: '' });
             localStorage.setItem(key, JSON.stringify(state));
+        }
+
+        function findCompletedTasksForGoal(goal) {
+            var results = [];
+            var dates = [];
+            for (var i = 1; i <= 7; i++) {
+                var d = new Date(currentDate);
+                d.setDate(d.getDate() - i);
+                d.setHours(0,0,0,0);
+                dates.push(d);
+            }
+
+            // derive simple keyword list from goal.statement
+            var keywords = [];
+            if (goal.statement) {
+                goal.statement.split(/[^\w]+/).forEach(function(w) { if (w.length > 3) keywords.push(w.toLowerCase()); });
+            }
+
+            dates.forEach(function(dd) {
+                var state = loadDayState(dd);
+                if (!state) return;
+                if (state.otherTasks && Array.isArray(state.otherTasks)) {
+                    state.otherTasks.forEach(function(t) {
+                        var isDone = (t.status === 'done' || t.status === '\u2713' || t.status === 'completed');
+                        var linked = t.goalId && t.goalId === goal.id;
+                        var matchesKeyword = false;
+                        if (!linked && keywords.length > 0 && t.text) {
+                            var ltxt = t.text.toLowerCase();
+                            for (var k=0;k<keywords.length;k++) { if (ltxt.indexOf(keywords[k]) !== -1) { matchesKeyword = true; break; } }
+                        }
+                        if (isDone && (linked || matchesKeyword)) {
+                            results.push({ text: t.text, date: new Date(dd), linked: linked, dayKey: 'planner-' + dateKey(dd) });
+                        }
+                    });
+                }
+            });
+            return results;
         }
 
         function openModifyHabitModal(habit) {
